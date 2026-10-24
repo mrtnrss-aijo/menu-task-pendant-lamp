@@ -222,6 +222,23 @@ function setStatus(text, tone = '') {
   el.dataset.tone = tone;
 }
 
+// Shows a problem in the notice card, with the technical reason in small print.
+function showDetail(text, err) {
+  const notice = $('notice');
+  notice.textContent = '';
+  const strong = document.createElement('strong');
+  strong.textContent = text;
+  notice.append(strong);
+  if (err) {
+    const small = document.createElement('div');
+    small.style.cssText = 'margin-top:8px;font-size:12px;word-break:break-word';
+    small.textContent = `Details: ${err.name || 'Error'}: ${err.message || err}`;
+    notice.append(small);
+  }
+}
+window.addEventListener('error', e => { setStatus('Page error', 'bad'); showDetail('Something went wrong in the page.', e.error || { message: e.message }); });
+window.addEventListener('unhandledrejection', e => { setStatus('Page error', 'bad'); showDetail('Something went wrong in the page.', e.reason); });
+
 function setConnectedUI(on) {
   connected = on;
   $('controls').disabled = !on;
@@ -304,10 +321,12 @@ async function connect() {
   const password = $('pw').value;
   if (!password) { setStatus('Enter the password', 'bad'); $('pw').focus(); return; }
 
+  setStatus('Looking for lamp…', 'busy');
   try {
     device = await navigator.bluetooth.requestDevice({ filters: [{ name: LAMP.name }], optionalServices: [SERVICE] });
   } catch (e) {
     setStatus(e.name === 'NotFoundError' ? 'No lamp selected' : 'Bluetooth unavailable', 'bad');
+    showDetail('Bluetooth did not return the lamp.', e);
     return;
   }
 
@@ -346,7 +365,7 @@ async function connect() {
     console.warn('Connect failed', e);
     if (device && device.gatt.connected) { userDisconnect = true; device.gatt.disconnect(); }
     setStatus('Lamp not found', 'bad');
-    $('notice').innerHTML = '<strong>Could not reach the lamp.</strong> Is it switched on at the wall and within range? Is another phone or laptop still connected? Disconnect there and try again.';
+    showDetail('Could not reach the lamp. Is it switched on at the wall and within range? Is another phone or laptop still connected? Disconnect there and try again.', e);
   } finally {
     $('connect').disabled = false;
   }
