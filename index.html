@@ -55,6 +55,7 @@ fieldset:disabled { opacity: 0.5; }
 .value { font-variant-numeric: tabular-nums; color: var(--muted); font-size: 15px; }
 .ends { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-top: -2px; }
 .default { margin-top: 20px; }
+button.link { border: 0; min-height: 40px; margin-top: 8px; font-weight: 500; font-size: 14px; color: var(--muted); text-decoration: underline; }
 
 /* Power switch */
 .switch { position: relative; width: 56px; height: 32px; flex: none; }
@@ -98,6 +99,7 @@ input[type="range"]::-moz-range-thumb { width: 28px; height: 28px; border-radius
       <label class="check"><input id="remember" type="checkbox"> Remember on this device</label>
     </div>
     <button id="connect" class="primary" type="button">Connect</button>
+    <button id="show-all" class="link" type="button" hidden>Lamp not in the list? Show all devices</button>
   </section>
 
   <section class="card">
@@ -325,7 +327,7 @@ $('default').addEventListener('click', () => {
 });
 
 // --- Connection -------------------------------------------------------------
-async function connect() {
+async function connect(showAll = false) {
   if (!navigator.bluetooth) {
     setStatus('No Bluetooth here', 'bad');
     $('notice').innerHTML = '<strong>This browser cannot use Bluetooth.</strong> Use Chrome or Edge on the laptop, Chrome on Android, or Bluefy on the iPhone.';
@@ -336,10 +338,14 @@ async function connect() {
 
   setStatus('Looking for lamp…', 'busy');
   try {
-    device = await navigator.bluetooth.requestDevice({ filters: [{ name: LAMP.name }], optionalServices: [SERVICE] });
+    // Some phones know the lamp under a slightly different name, so match on the prefix too.
+    device = await navigator.bluetooth.requestDevice(showAll
+      ? { acceptAllDevices: true, optionalServices: [SERVICE] }
+      : { filters: [{ name: LAMP.name }, { namePrefix: 'E3' }], optionalServices: [SERVICE] });
   } catch (e) {
     setStatus(e.name === 'NotFoundError' ? 'No lamp selected' : 'Bluetooth unavailable', 'bad');
-    showDetail('Bluetooth did not return the lamp.', e);
+    showDetail('Bluetooth did not return the lamp. If the list was empty, try "Show all devices" and pick the lamp there.', e);
+    $('show-all').hidden = false;
     return;
   }
 
@@ -354,7 +360,7 @@ async function connect() {
     const pair = await service.getCharacteristic(CHAR_PAIR);
     cmdChar = await service.getCharacteristic(CHAR_CMD);
 
-    const name = device.name || LAMP.name;
+    const name = LAMP.name;   // the mesh name, whatever name the phone shows
     const rnd = crypto.getRandomValues(new Uint8Array(8));
     await write(pair, await Lamp.loginPacket(name, password, rnd));
     await sleep(300);
@@ -378,7 +384,7 @@ async function connect() {
     console.warn('Connect failed', e);
     if (device && device.gatt.connected) { userDisconnect = true; device.gatt.disconnect(); }
     setStatus('Lamp not found', 'bad');
-    showDetail('Could not reach the lamp. Is it switched on at the wall and within range? Is another phone or laptop still connected? Disconnect there and try again.', e);
+    showDetail(`Could not reach the lamp (selected: "${device && device.name || 'unnamed device'}"). Is it the right device, switched on at the wall and within range? Is another phone or laptop still connected? Disconnect there and try again.`, e);
   } finally {
     $('connect').disabled = false;
   }
@@ -391,12 +397,13 @@ function onDisconnected() {
   if (wasConnected) setStatus(userDisconnect ? 'Disconnected' : 'Connection lost', userDisconnect ? '' : 'bad');
 }
 
-$('connect').addEventListener('click', connect);
+$('connect').addEventListener('click', () => connect(false));
+$('show-all').addEventListener('click', () => connect(true));
 $('disconnect').addEventListener('click', () => {
   userDisconnect = true;
   if (device && device.gatt.connected) device.gatt.disconnect(); else onDisconnected();
 });
-$('pw').addEventListener('keydown', e => { if (e.key === 'Enter') connect(); });
+$('pw').addEventListener('keydown', e => { if (e.key === 'Enter') connect(false); });
 $('remember').addEventListener('change', () => { if (!$('remember').checked) store.clear(); });
 
 // Start-up
