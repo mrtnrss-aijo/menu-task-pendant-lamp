@@ -1,0 +1,376 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MENU Task Pendant Lamp</title>
+<meta name="theme-color" content="#f6f3ee" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#16140f" media="(prefers-color-scheme: dark)">
+<style>
+:root {
+  --bg: #f6f3ee; --card: #fffdf9; --ink: #22201c; --muted: #6f6a61; --line: #e4ded3;
+  --accent: #c8741f; --accent-ink: #ffffff; --ok: #2f7d4a; --bad: #b8392f; --busy: #9a6a12;
+  --field: #f6f3ee; --thumb: #ffffff;
+  --bright-track: linear-gradient(90deg, #5a5247, #ffe2a8);
+  --ct-track: linear-gradient(90deg, #ffae55, #fff1dc 60%, #e2ebff);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #16140f; --card: #211e18; --ink: #f1ece2; --muted: #a59d90; --line: #39332b;
+    --accent: #f0a14f; --accent-ink: #1b150c; --ok: #6cc08a; --bad: #ef7b70; --busy: #e3b04f;
+    --field: #191712; --thumb: #f1ece2;
+    --bright-track: linear-gradient(90deg, #3a342b, #ffd78c);
+    --ct-track: linear-gradient(90deg, #e8913a, #f3dfc1 60%, #b9c9ee);
+  }
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--bg); color: var(--ink);
+  font: 16px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; -webkit-text-size-adjust: 100%; }
+main { max-width: 460px; margin: 0 auto; padding: 20px 16px calc(28px + env(safe-area-inset-bottom)); }
+header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 4px 0 16px; }
+h1 { font-size: 21px; line-height: 1.2; margin: 0; letter-spacing: -0.01em; }
+.pill { font-size: 13px; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--line);
+  color: var(--muted); white-space: nowrap; }
+.pill[data-tone="ok"] { color: var(--ok); border-color: currentColor; }
+.pill[data-tone="bad"] { color: var(--bad); border-color: currentColor; }
+.pill[data-tone="busy"] { color: var(--busy); border-color: currentColor; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 16px; margin-bottom: 12px; }
+.notice { font-size: 14px; color: var(--muted); }
+.notice strong { color: var(--ink); font-weight: 600; }
+.field-label { display: block; font-size: 14px; color: var(--muted); margin-bottom: 6px; }
+input[type="password"] { width: 100%; font: inherit; padding: 12px; border-radius: 10px;
+  border: 1px solid var(--line); background: var(--field); color: var(--ink); }
+.check { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--muted); margin: 10px 0 14px; }
+.check input { width: 18px; height: 18px; accent-color: var(--accent); margin: 0; }
+button { font: inherit; font-weight: 600; border-radius: 12px; padding: 12px 16px; min-height: 48px; width: 100%;
+  border: 1px solid var(--line); background: transparent; color: var(--ink); cursor: pointer; }
+button.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+button:disabled { opacity: 0.45; cursor: default; }
+fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
+fieldset:disabled { opacity: 0.5; }
+.row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.power { font-weight: 600; font-size: 17px; }
+.control + .control { margin-top: 18px; }
+.control .row { margin-bottom: 4px; }
+.value { font-variant-numeric: tabular-nums; color: var(--muted); font-size: 15px; }
+.ends { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-top: -2px; }
+.default { margin-top: 20px; }
+
+/* Power switch */
+.switch { position: relative; width: 56px; height: 32px; flex: none; }
+.switch input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer; }
+.switch span { position: absolute; inset: 0; border-radius: 999px; background: var(--line); transition: background .15s; pointer-events: none; }
+.switch span::after { content: ""; position: absolute; top: 3px; left: 3px; width: 26px; height: 26px; border-radius: 50%;
+  background: var(--thumb); box-shadow: 0 1px 3px rgba(0,0,0,.25); transition: transform .15s; }
+.switch input:checked + span { background: var(--accent); }
+.switch input:checked + span::after { transform: translateX(24px); }
+.switch input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* Sliders */
+input[type="range"] { -webkit-appearance: none; appearance: none; width: 100%; height: 36px; background: transparent; margin: 0; }
+input[type="range"]::-webkit-slider-runnable-track { height: 12px; border-radius: 999px; background: var(--track); border: 1px solid var(--line); }
+input[type="range"]::-moz-range-track { height: 12px; border-radius: 999px; background: var(--track); border: 1px solid var(--line); }
+input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 28px; height: 28px; margin-top: -9px; border-radius: 50%;
+  background: var(--thumb); border: 1px solid var(--line); box-shadow: 0 1px 4px rgba(0,0,0,.3); }
+input[type="range"]::-moz-range-thumb { width: 28px; height: 28px; border-radius: 50%;
+  background: var(--thumb); border: 1px solid var(--line); box-shadow: 0 1px 4px rgba(0,0,0,.3); }
+#bright { --track: var(--bright-track); }
+#ct { --track: var(--ct-track); }
+[hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>MENU Task Pendant Lamp</h1>
+    <span id="status" class="pill" role="status" aria-live="polite">Not connected</span>
+  </header>
+
+  <section class="card notice" id="notice">
+    <strong>One device at a time.</strong> Only one device can be connected to the lamp at a time.
+    Press Disconnect, or close this page, before using another phone or laptop.
+  </section>
+
+  <section class="card" id="login">
+    <div>
+      <label class="field-label" for="pw">Lamp password</label>
+      <input id="pw" type="password" autocomplete="current-password" autocapitalize="off" spellcheck="false" maxlength="16">
+      <label class="check"><input id="remember" type="checkbox"> Remember on this device</label>
+    </div>
+    <button id="connect" class="primary" type="button">Connect</button>
+  </section>
+
+  <section class="card">
+    <fieldset id="controls" disabled>
+      <div class="row">
+        <span class="power" id="power-label">Power</span>
+        <label class="switch"><input id="power" type="checkbox" role="switch" aria-labelledby="power-label" checked><span></span></label>
+      </div>
+      <div class="control" style="margin-top:18px">
+        <div class="row"><label for="bright">Brightness</label><span class="value" id="bright-value">50 %</span></div>
+        <input id="bright" type="range" min="1" max="100" step="1" value="50">
+      </div>
+      <div class="control">
+        <div class="row"><label for="ct">Colour temperature</label><span class="value" id="ct-value">2700 K</span></div>
+        <input id="ct" type="range" min="2700" max="4000" step="50" value="2700">
+        <div class="ends"><span>Warm</span><span>Cool</span></div>
+      </div>
+      <button id="default" class="default" type="button">Default · 50 % / 2700 K</button>
+    </fieldset>
+  </section>
+
+  <section class="card" id="disconnect-card" hidden>
+    <button id="disconnect" type="button">Disconnect</button>
+  </section>
+</main>
+
+<script id="lamp-core">
+// Telink mesh protocol for the E3Control lamp, as used by the MENU Lighting app.
+// Pure functions only; no Bluetooth here, so they can be tested on their own.
+const Lamp = (() => {
+  const subtle = globalThis.crypto.subtle;
+  const CT_MIN = 2700, CT_MAX = 4000;
+  const VENDOR = [0x11, 0x02];
+  const ZERO_IV = new Uint8Array(16);
+
+  const pad16 = b => { const o = new Uint8Array(16); o.set(Array.from(b).slice(0, 16)); return o; };
+  const rev = b => Uint8Array.from(b).reverse();
+  const xor = (a, b) => { const n = Math.min(a.length, b.length), o = new Uint8Array(n); for (let i = 0; i < n; i++) o[i] = a[i] ^ b[i]; return o; };
+  const concat = (...parts) => { const o = new Uint8Array(parts.reduce((s, p) => s + p.length, 0)); let i = 0; for (const p of parts) { o.set(p, i); i += p.length; } return o; };
+
+  // Telink AES: AES-128-ECB with key, input and output byte-reversed.
+  // Web Crypto has no ECB; one block of CBC with a zero IV gives the same result.
+  async function aes(key, data) {
+    const k = await subtle.importKey('raw', rev(pad16(key)), { name: 'AES-CBC' }, false, ['encrypt']);
+    const out = new Uint8Array(await subtle.encrypt({ name: 'AES-CBC', iv: ZERO_IV }, k, rev(pad16(data))));
+    return rev(out.slice(0, 16));
+  }
+
+  function namePass(name, password) {
+    const n = new TextEncoder().encode(name), p = new TextEncoder().encode(password);
+    if (n.length > 16 || p.length > 16) throw new Error('Name or password longer than 16 characters');
+    return xor(pad16(n), pad16(p));
+  }
+
+  async function loginPacket(name, password, rnd) {
+    return concat([0x0c], rnd, (await aes(rnd, namePass(name, password))).slice(0, 8));
+  }
+
+  function sessionKey(name, password, rnd, reply) {
+    return aes(namePass(name, password), concat(rnd, reply.slice(1, 9)));
+  }
+
+  const macLE = mac => Uint8Array.from(mac.split(/[:-]/).map(h => parseInt(h, 16))).reverse();
+
+  async function checksum(key, nonce, payload) {
+    let c = await aes(key, concat(nonce, [payload.length]));
+    for (let i = 0; i < payload.length; i += 16) c = await aes(key, xor(c, pad16(payload.slice(i, i + 16))));
+    return c;
+  }
+
+  async function crypt(key, nonce, payload) {
+    const base = pad16(concat([0], nonce)), out = new Uint8Array(payload.length);
+    for (let i = 0; i < payload.length; i += 16) {
+      out.set(xor(await aes(key, base), payload.slice(i, i + 16)), i);
+      base[0]++;
+    }
+    return out;
+  }
+
+  async function command(key, mac, dest, opcode, params, seq) {
+    const nonce = concat(macLE(mac).slice(0, 4), [1], seq);
+    const payload = new Uint8Array(15);
+    payload.set(concat([dest & 255, (dest >> 8) & 255, opcode], VENDOR, params).slice(0, 15));
+    return concat(seq, (await checksum(key, nonce, payload)).slice(0, 2), await crypt(key, nonce, payload));
+  }
+
+  // Values exactly as the app's sliders compute them.
+  const level = pct => Math.max(3, Math.round(Math.min(100, Math.max(1, pct)) * 2.55));
+  const warmWhite = k => 255 - Math.round((Math.min(CT_MAX, Math.max(CT_MIN, k)) - CT_MIN) * 255 / (CT_MAX - CT_MIN));
+  const lightParams = (pct, k) => Uint8Array.from([level(pct), warmWhite(k), 255, 0, 0, 0, 0, 0]);
+
+  return { aes, loginPacket, sessionKey, command, lightParams, level, warmWhite, macLE };
+})();
+</script>
+
+<script>
+'use strict';
+// This page is made for one lamp. Its name and address are broadcast by the lamp itself,
+// so they are not secret; the address is needed because browsers do not reveal it.
+const LAMP = { name: 'E3fz26P25WiA', mac: 'E0:CD:FD:45:19:C8' };
+const UUID = id => `00010203-0405-0607-0809-0a0b0c0d${id}`;
+const SERVICE = UUID('1910'), CHAR_CMD = UUID('1912'), CHAR_PAIR = UUID('1914');
+const OP_POWER = 0xD0, OP_LIGHT = 0xD2;
+const DEFAULT = { pct: 50, k: 2700 };
+const STORE_KEY = 'pendant-lamp.password';
+const MIN_GAP_MS = 200;   // at most about 5 commands per second
+
+const $ = id => document.getElementById(id);
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const store = {
+  get() { try { return localStorage.getItem(STORE_KEY); } catch { return null; } },
+  set(v) { try { localStorage.setItem(STORE_KEY, v); } catch {} },
+  clear() { try { localStorage.removeItem(STORE_KEY); } catch {} },
+};
+
+const NOTICE = $('notice').innerHTML;
+let device = null, cmdChar = null, sessionKey = null, connected = false, userDisconnect = false;
+
+function setStatus(text, tone = '') {
+  const el = $('status');
+  el.textContent = text;
+  el.dataset.tone = tone;
+}
+
+function setConnectedUI(on) {
+  connected = on;
+  $('controls').disabled = !on;
+  $('login').hidden = on;
+  $('disconnect-card').hidden = !on;
+}
+
+function write(characteristic, bytes) {
+  return characteristic.writeValueWithResponse
+    ? characteristic.writeValueWithResponse(bytes)
+    : characteristic.writeValue(bytes);
+}
+
+// --- Sending: one command in flight; newer values replace waiting ones ----
+const waiting = new Map();   // opcode -> params, latest wins
+let pumping = false;
+
+function queue(opcode, params) {
+  waiting.set(opcode, params);
+  if (!pumping) pump();
+}
+
+async function pump() {
+  pumping = true;
+  while (connected && waiting.size) {
+    const [opcode, params] = waiting.entries().next().value;
+    waiting.delete(opcode);
+    try {
+      const seq = crypto.getRandomValues(new Uint8Array(3));
+      await write(cmdChar, await Lamp.command(sessionKey, LAMP.mac, 0x0000, opcode, params, seq));
+    } catch (e) {
+      console.warn('Command failed', e);
+    }
+    await sleep(MIN_GAP_MS);
+  }
+  waiting.clear();
+  pumping = false;
+}
+
+// --- Controls ---------------------------------------------------------------
+function showValues() {
+  $('bright-value').textContent = `${$('bright').value} %`;
+  $('ct-value').textContent = `${$('ct').value} K`;
+}
+
+function sendLight() {
+  if (!$('power').checked) {           // moving a slider turns the lamp on
+    $('power').checked = true;
+    queue(OP_POWER, [1]);
+  }
+  const params = Lamp.lightParams(Number($('bright').value), Number($('ct').value));
+  const key = params.join(',');
+  if (key === lastLight) return;      // same as the last value sent: skip
+  lastLight = key;
+  queue(OP_LIGHT, params);
+}
+let lastLight = '';
+
+for (const id of ['bright', 'ct']) {
+  $(id).addEventListener('input', () => { showValues(); sendLight(); });
+  $(id).addEventListener('change', sendLight);   // final value is always sent
+}
+
+$('power').addEventListener('change', () => queue(OP_POWER, [$('power').checked ? 1 : 0]));
+
+$('default').addEventListener('click', () => {
+  $('bright').value = DEFAULT.pct;
+  $('ct').value = DEFAULT.k;
+  showValues();
+  sendLight();
+});
+
+// --- Connection -------------------------------------------------------------
+async function connect() {
+  if (!navigator.bluetooth) {
+    setStatus('No Bluetooth here', 'bad');
+    $('notice').innerHTML = '<strong>This browser cannot use Bluetooth.</strong> Use Chrome or Edge on the laptop, Chrome on Android, or Bluefy on the iPhone.';
+    return;
+  }
+  const password = $('pw').value;
+  if (!password) { setStatus('Enter the password', 'bad'); $('pw').focus(); return; }
+
+  try {
+    device = await navigator.bluetooth.requestDevice({ filters: [{ name: LAMP.name }], optionalServices: [SERVICE] });
+  } catch (e) {
+    setStatus(e.name === 'NotFoundError' ? 'No lamp selected' : 'Bluetooth unavailable', 'bad');
+    return;
+  }
+
+  setStatus('Connecting…', 'busy');
+  $('connect').disabled = true;
+  userDisconnect = false;
+  device.addEventListener('gattserverdisconnected', onDisconnected);
+
+  try {
+    const server = await device.gatt.connect();
+    const service = await server.getPrimaryService(SERVICE);
+    const pair = await service.getCharacteristic(CHAR_PAIR);
+    cmdChar = await service.getCharacteristic(CHAR_CMD);
+
+    const name = device.name || LAMP.name;
+    const rnd = crypto.getRandomValues(new Uint8Array(8));
+    await write(pair, await Lamp.loginPacket(name, password, rnd));
+    await sleep(300);
+    const view = await pair.readValue();
+    const reply = new Uint8Array(view.buffer, view.byteOffset, view.byteLength);
+
+    if (reply[0] !== 0x0d) {
+      userDisconnect = true;
+      device.gatt.disconnect();
+      setStatus(reply[0] === 0x0e ? 'Wrong password' : 'Login failed', 'bad');
+      return;
+    }
+
+    sessionKey = await Lamp.sessionKey(name, password, rnd, reply);
+    lastLight = '';
+    if ($('remember').checked) store.set(password); else store.clear();
+    setConnectedUI(true);
+    setStatus('Connected', 'ok');
+    $('notice').innerHTML = NOTICE;
+  } catch (e) {
+    console.warn('Connect failed', e);
+    if (device && device.gatt.connected) { userDisconnect = true; device.gatt.disconnect(); }
+    setStatus('Lamp not found', 'bad');
+    $('notice').innerHTML = '<strong>Could not reach the lamp.</strong> Is it switched on at the wall and within range? Is another phone or laptop still connected? Disconnect there and try again.';
+  } finally {
+    $('connect').disabled = false;
+  }
+}
+
+function onDisconnected() {
+  const wasConnected = connected;
+  setConnectedUI(false);
+  sessionKey = null; cmdChar = null; waiting.clear();
+  if (wasConnected) setStatus(userDisconnect ? 'Disconnected' : 'Connection lost', userDisconnect ? '' : 'bad');
+}
+
+$('connect').addEventListener('click', connect);
+$('disconnect').addEventListener('click', () => {
+  userDisconnect = true;
+  if (device && device.gatt.connected) device.gatt.disconnect(); else onDisconnected();
+});
+$('pw').addEventListener('keydown', e => { if (e.key === 'Enter') connect(); });
+$('remember').addEventListener('change', () => { if (!$('remember').checked) store.clear(); });
+
+// Start-up
+const saved = store.get();
+if (saved) { $('pw').value = saved; $('remember').checked = true; }
+showValues();
+</script>
+</body>
+</html>
