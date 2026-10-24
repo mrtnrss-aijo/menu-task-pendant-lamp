@@ -124,10 +124,23 @@ input[type="range"]::-moz-range-thumb { width: 28px; height: 28px; border-radius
   </section>
 </main>
 
+<script>
+// Runs first: if a later script fails to load, show it on screen instead of failing silently.
+(function () {
+  function report(msg) {
+    var st = document.getElementById('status'), nt = document.getElementById('notice');
+    if (st) { st.textContent = 'Page error'; st.setAttribute('data-tone', 'bad'); }
+    if (nt) { nt.textContent = 'Something went wrong in the page. Details: ' + msg; }
+  }
+  window.addEventListener('error', function (e) { report(e.message || String(e.error)); });
+  window.addEventListener('unhandledrejection', function (e) { report(e.reason && (e.reason.name + ': ' + e.reason.message) || String(e.reason)); });
+})();
+</script>
+
 <script id="lamp-core">
 // Telink mesh protocol for the E3Control lamp, as used by the MENU Lighting app.
 // Pure functions only; no Bluetooth here, so they can be tested on their own.
-const Lamp = (() => {
+globalThis.MenuLampCore = (() => {
   const subtle = globalThis.crypto.subtle;
   const CT_MIN = 2700, CT_MAX = 4000;
   const VENDOR = [0x11, 0x02];
@@ -194,7 +207,9 @@ const Lamp = (() => {
 </script>
 
 <script>
+(() => {
 'use strict';
+const Lamp = globalThis.MenuLampCore;
 // This page is made for one lamp. Its name and address are broadcast by the lamp itself,
 // so they are not secret; the address is needed because browsers do not reveal it.
 const LAMP = { name: 'E3fz26P25WiA', mac: 'E0:CD:FD:45:19:C8' };
@@ -236,8 +251,6 @@ function showDetail(text, err) {
     notice.append(small);
   }
 }
-window.addEventListener('error', e => { setStatus('Page error', 'bad'); showDetail('Something went wrong in the page.', e.error || { message: e.message }); });
-window.addEventListener('unhandledrejection', e => { setStatus('Page error', 'bad'); showDetail('Something went wrong in the page.', e.reason); });
 
 function setConnectedUI(on) {
   connected = on;
@@ -390,6 +403,7 @@ $('remember').addEventListener('change', () => { if (!$('remember').checked) sto
 const saved = store.get();
 if (saved) { $('pw').value = saved; $('remember').checked = true; }
 showValues();
+})();
 </script>
 </body>
 </html>
